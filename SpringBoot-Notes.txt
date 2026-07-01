@@ -1,0 +1,2031 @@
+============
+Spring Notes
+============
+
+Q. What is POJO class?
+Q. What is Java Bean class?
+Q. What is Difference Between POJO class & Java Bean class?
+
+Q. POJO vs Java Bean vs Spring Bean
+
+
+----------
+POJO class 
+----------
+--> Plain Old Java Object.
+
+Rules:
+------
+--> The class does not have any Parent class and does not implement any Interface.
+--> The class does not have any @Annotation.
+--> Fields of a class can be any access modifiers  i.e  private, protected, public or deafult.
+--> Constructor can be of any type i.e 0-arg-constructor or Parameterized Constructor [OPTIONAL].
+--> It can have Other methods as well i.e setter's, getter's, toString(). [OPTIONAL]
+
+class Employee
+{
+	int empId;
+	String empName;
+
+	public String toString(){}
+	
+}
+
+
+
+----------
+Java Bean
+----------
+--> A Java Bean is a Java class created with specific special requirement. It is more structured and restricted than 
+   a POJO class.
+
+Rules:
+------
+--> All feilds must be private.
+--> class must have 0-arg constructor.
+--> Setter & Getter Methods are Mandatory, they must 'public'.
+--> The class must implement java.io.Serializable interface.
+
+Example :
+---------
+
+class Employee implement Serializable
+{
+	private int empId;
+	private String empName;
+
+	public Employee(){}
+
+	// setters
+	// getters
+}
+
+
+
+Q. Why any class is Implementing Serializable interface ?
+----------------------------------------------------------
+--> Serializable is used for Converting a Java object into byte stream.
+--> Serializable is a marker interface, it has NO methods. Implementing it simply signals to the JVM
+    that this class can be serialized.
+--> This is Need When passing objects between two services through Network (e.g Service 1 to Service 2 on Different 
+    Systems). 
+
+-----------
+Spring Bean
+-----------
+--> In Spring Terminology, both POJO classes and Java Bean Classes used in a Spring Project are collectively called 
+	Spring Bean class.
+
+--> Spring Bean = POJO class or Java Bean class
+
+------
+Note :
+------
+      * Entity classes (used in ORM/JPA) are Java Bean classes.
+      * Model  classes can be either POJO or Java Bean classes.
+
+
+-------------------------------------------------------------------------------------------------------------------------
+
+==================
+IS-A Relationship
+==================
+
+--> IS-A Relationship is created when a child class extends a parent class.
+--> The 'extends' keyword always means IS-A relationship.
+
+
+class Person 
+{
+	// variable - id, name, age
+	// method
+}
+
+class Student extends Person				// Student IS-A Person
+{
+	// rno, marks, per
+}
+
+class Teacher extends Person
+{
+	// salary, dept
+}
+
+
+Examples 
+---------
+•Car extends Vehicle       		  →  Car IS-A Vehicle 
+•Circle extends Shape       	  →  Circle IS-A Shape 
+•HealthInsurance extends Policy   →  HealthInsurance IS-A Policy 
+•VehicleInsurance extends Policy  →  VehicleInsurance IS-A Policy 
+
+Notes:
+-------
+--> Requires inheritance  i.e the 'extends' keyword.
+--> One class can extend only ONE parent class (Java does not support multiple class inheritance) 
+
+
+-------------------------------------------------------------------------------------------------------------------------
+
+===================
+HAS-A Relationship
+===================
+
+--> HAS-A relationship is created when you create an Object of one class as a data member inside another class.
+--> No 'extends' keyword, just Object creation inside the class.
+
+
+class A      		--> A is Dependent class
+{
+	int i;
+	B  ob = new B(); 
+}
+
+class B    			--> B is Dependency class
+{
+
+}
+
+
+
+Note :  Dependent class & Dependency class are core idea behind Dependency Injection.
+------ 
+
+
+===========================
+Types of HAS-A Relationship
+===========================
+
+1. Aggregation (Weak Relationship)
+2. Composition (Strong Relationship)
+
+
+
+Aggregation (Weak Relationship)
+-------------------------------
+--> Student & Course
+
+
+class Student
+{
+	int rno;
+	String name;
+	Course  c;
+}
+
+Course c1 = new Course("AJ");
+Course c2 = new Course("SBMAi");
+
+
+Student s1 = new Student(101,"Pratik",c1);
+Student s2 = new Student(102,"Harsh",c2);
+Student s3 = new Student(103,"Aniket",c2);
+
+
+
+2. Composition (Strong Relationship)
+-------------------------------------
+--> A House and its Rooms. Rooms donot exist without House.
+
+class House
+{
+	String id;
+	Room  hall;
+	Room  bedroom;
+
+	House()
+	{
+		id = Generate random id;
+		hall = new Room(10,10);
+		bedroom = new Room(8,8);
+	}
+}
+
+class Room
+{
+	
+}
+
+House h = new House();
+
+
+
+Example 1:
+---------
+
+class User
+{
+	private String username;
+	private String password;
+
+	PasswordEncoder encoder;
+
+	User(String username, String password)
+	{
+		this.username = username;
+		this.password = password;
+		encoder       = new PasswordEncoder();
+
+		this.username = encoder.encode(username);
+		this.password = encoder.encode(password);
+
+	}
+}
+
+
+public class PasswordEncoder
+{
+	String encode(String password)
+	{
+		// 	logic for encoding 
+	}
+
+	String decode(String password)
+	{
+		// 	logic for decoding
+	}
+}
+
+
+
+
+Example 2:  Multiple HAS-A (Different Types)
+--------------------------------------------
+--> One object can have HAS-A relationships with multiple objects of "different" types.
+
+public class NotificationManager  
+{ 
+		private String emailId; 
+		private long mobileNumber; 
+
+		EmailNotification email = new EmailNotification();    // HAS-A 
+    	SMSNotification  sms    = new SMSNotification();      // HAS-A 
+
+}
+
+class EmailNotification  
+{ 
+    /* send email logic */  
+} 
+
+class SMSNotification   
+{  
+    /* send sms logic  */  
+} 
+
+
+
+Example 3 — Multiple HAS-A (Same Types)
+--------------------------------------
+--> One object can have HAS-A relationships with multiple objects of "Same" types.
+
+
+class Employee  
+{ 
+    Address currentAddress   = new Address(); 		// HAS-A (same type) 
+    Address permanentAddress = new Address(); 		// HAS-A (same type) 
+} 
+  
+class Address  
+{ 
+    String street; 
+    String city; 
+    String pincode; 
+    :
+    :
+} 
+ 
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+‘HAS-A’ Chaining in Spring Boot Projects
+--------------------------------------------
+
+--> [ Controller --> Service --> Repository ]
+
+Example:1
+---------
+
+public class EmployeeController  
+{ 
+    EmployeeService service;     // HAS-A --> depends on EmployeeService 
+} 
+
+public class EmployeeService  
+{ 
+    EmployeeRepository repo;     // HAS-A --> depends on EmployeeRepository 
+} 
+
+public class EmployeeRepository  
+{ 
+    JdbcTemplate template;       // HAS-A --> depends on JdbcTemplate 
+} 
+
+Example:2
+---------
+
+class PaymentController  // DEPENDENT CLASS 
+{                
+    PaymentService ps = new PaymentService(); // dependency 
+} 
+  
+class PaymentService             // DEPENDENCY of PaymentController 
+{                                // also a DEPENDENT CLASS      
+    PaymentDAO dao = new PaymentDAO();   
+} 
+
+class PaymentDAO // DEPENDENCY of PaymentService 
+{       
+
+} 
+
+
+Dependent class VS Dependency class
+===================================
+--> These two terms are used specifically in HAS-A relationships.
+
+
+Dependent class :
+----------------
+* The class that creates object of another class inside itself.
+* It depends on other class.
+
+Dependency class :
+-----------------
+* The class whose object is being created inside the dependent class.
+* It provides services to the dependent class.
+
+
+
+Interview Questions
+-------------------
+Q1: What is IS-A relationship in Java? How is it created? 
+Q2: What is HAS-A relationship in Java? How is it created? 
+Q3. What is the difference between IS-A and HAS-A relationship? 
+Q4: What is Aggregation? What is Composition? 
+Q5: What is a Dependent class and what is a Dependency class?
+Q6: Can a class be both a Dependent class and a Dependency class at the same time?
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+--------------
+Spring Lec 3
+--------------
+
+class A 		<-- Independent class
+{
+	
+
+}
+
+class B extneds A
+{
+	
+
+}
+
+
+
+class A 		<-- Dependent class
+{
+	B ob;		
+	ob.fun();
+
+}
+
+class B 		<-- Dependency class
+{
+	
+
+}
+
+
+class Employee
+{
+	int eid;
+	Address addr;
+}
+
+
+
+---------------
+Coupled Objects
+---------------
+--> When Dependent object has a 'HAS-A' relationship with a dependency object, we say two objects are coupled object.
+
+--> The question is, how tightly or loosely are they coupled ?
+--> Type of Coupling depends on How the dependency object is provided to the dependent class.
+
+
+Example:
+--------
+
+class A 		
+{
+	B ob;		
+	ob.fun();
+
+}
+
+class B 		
+{
+	
+
+}
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+												---------------
+												Tight Coupling
+												---------------
+==========================
+What is Tightly Coupling ?
+==========================
+--> When a dependent object wants to change its dependency object, and code changes are required in the 
+    dependent class to do so, the two objects are called " Tightly Coupled ".
+
+
+Example 1 :
+-----------
+--> Travel is the dependent class. Car is the dependency class. Travel creates a Car object directly inside itself.
+--> Every Time the dependency changes (Car -> Bike -> Train), the travel class must be edited. This is tight coupling
+	i.e the dependent class is 'hardwired' to its dependency.
+
+
+class Travel
+{
+	Car c = new Car();			<-- hardwired
+	Bike b = new Bike();		<-- hardwired
+	Train t = new Train();             <-- This all object are Tightly Coupled
+
+	void journey()
+	{
+
+	}
+} 
+
+
+class Car
+{
+	void move()
+	{
+
+	}
+}
+
+class Bike
+{
+	void move()
+	{
+
+	}
+}
+
+class Train
+{
+	void move()
+	{
+
+	}
+}
+
+
+
+
+
+Note :
+------
+--> Coupling only applies when one object depends on the other to access it's services.
+
+
+
+
+Q. What is mean by Object State.
+--------------------------------
+--> Current value/reference is state of the object.
+
+Q. How to change State of Object.
+----------------------------------
+--> Using Paramertized Constructor & Setter Method.
+
+Q. Parameterized Constructor  Vs Setter Method (Purpose)
+--------------------------------------------------------
+--> to change State of the Object.
+
+
+Example :
+----------
+class A
+{
+    private int data;
+
+    A(int data)
+    {
+        this.data=data;
+    }
+
+    public setData(int data)
+    {
+        this.data=data;
+    }
+}
+
+public class Demo1
+{
+    public static void main(String[] args) 
+    {       
+        A ob = new A(10);
+        ob.setData(20);
+     
+    }
+}
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+											Lec 2.5 (11-06-2026) 
+
+											=================
+											Loosely Coupling
+											=================
+----------------
+Loosely Coupling 
+----------------
+--> When a Dependant object wants to change it's dependency object, and NO code changes are required in 
+	the dependant class then the two objects are called " Loosely Coupled ".
+
+--> Key Rule:
+		-> To achieve loose coupling, the dependent class must NOT create the dependency object inside itself.
+		   The dependency must be provided from OUTSIDE the class.
+
+--------------------------------
+Rules to Achieve Loose Coupling 
+--------------------------------
+Rule 1 : The dependency classes must implement a common interface.
+
+Rule 2 : In the dependent class, declare an interface reference variable(not a concrete class object).
+		 i.e Do NOT use 'new' to create the object inside the class.
+
+Rule 3 : In the dependent class, define a constructor OR a setter method to inject the dependency
+         object from outside the class. 
+
+
+----------------------------------------------------------------
+Important Clarification - Interface Reference vs class Reference
+----------------------------------------------------------------
+--> Even if you declare a Vehicle interface reference variable but still assign the object inside the class
+	using 'new', it is tight coupling.
+
+Example :
+---------
+ 
+ class Travel
+ {
+ 	private Vehicle v = new Car(); 
+ }
+
+---------
+key Point
+---------
+ --> Using an interface reference variable alone is NOT enough for loose coupling. 
+ --> The object must be created OUTSIDE the dependant class and passed in via. constructor or setter.
+ 	 Only then is it loose coupling.
+
+
+
+--------------------------------
+Q. Interface reference variable. 						Time --(30.01)
+--------------------------------
+--> 
+
+Example :
+---------
+-->
+
+interface A
+{
+	void show();
+}
+
+class B implements A
+{
+	public void show()
+	{
+		// logic 
+	}
+}
+
+A ob = new A() 	--> Error - interface cannot be Instantiated
+A ob = new B()  --> Okay
+ob.show();
+
+B ob = new B();
+ob.show();
+
+
+Example 1:
+-----------
+-->
+
+class PQR
+{
+    void display(List<Integer> L)
+    {
+        System.out.println("In Display !!" + L);
+    }
+}
+
+public class Demo3
+{
+	public static void main(String[] args) 
+	{
+    	PQR ob = new PQR();
+        ob.display(new ArrayList<>(Arrays.asList(10,20,30)));
+        ob.display(new LinkedList<>(Arrays.asList(33,44,55)));
+	}
+}
+
+
+Example 2:
+-----------
+
+interface Vehicle
+{
+	void move();
+}
+
+class Car implements Vehicle  			// Rule 1 - Dependency classes imlement a common interface 	
+{
+	void move()
+	{
+
+	}
+}
+
+class Bike implements Vehicle
+{
+	void move()
+	{
+
+	}
+}
+
+class Train implements Vehicle
+{
+	void move()
+	{
+
+	}
+}
+
+
+// Rule 2 - Dependent class uses INTERFACE reference variable
+// Rule 3 - Setter method to inject the dependency from outside
+
+class Travel
+{
+	Vehicle V;
+
+	Travel(Vehicle V)			// Contructor Injection
+	{
+		this.V = V;
+	}
+
+	void setVehicle(Vehicle V) 		// Setter Injection
+	{
+	    this.V = V;
+	}
+
+	void journey()
+	{
+		V.move();
+	}
+}
+
+
+--------------------------------
+Constructor Dependency Injection
+--------------------------------
+
+--> Every Time I have to create a new Object to Inject the Object.
+
+interface Vehicle
+{
+    void move();
+}
+
+class Car implements Vehicle
+{
+    public void move()
+    {
+        System.out.println("Car is Moving !!!");
+    }
+}
+
+class Bike implements Vehicle
+{
+    public void move()
+    {
+        System.out.println("Bike is Riding !!!");
+    }
+}
+
+class Train implements Vehicle
+{
+    public void move()
+    {
+        System.out.println("Train is Running !!!");
+    }
+}
+
+
+class Travel
+{
+    Vehicle V;
+
+    Travel(Vehicle V)
+    {
+        this.V = V;
+    }
+
+    void journey()
+    {
+        V.move();
+    }
+}
+
+
+public class Demo1
+{
+    public static void main(String[] args) 
+    {
+        Travel T = new Travel(new Car() );
+        T.journey();
+
+        Travel T2 = new Travel(new Bike() );
+        T2.journey();
+
+        Travel T3 = new Travel(new Train() );
+        T3.journey();
+
+    }
+}
+
+
+----------------------------
+Setter Dependency Injection
+----------------------------
+
+--> In Setter Injection there is no need to create Multiple object & using that single Object ref we can  
+	inject other Implementation classes through setter method which make it flexible to hold any Object in Vehicle
+	reference.
+
+--> During Runtime I can change my dependency object using setter method.
+
+
+Example:
+--------
+
+interface Vehicle
+{
+    void move();
+}
+
+class Car implements Vehicle
+{
+    public void move()
+    {
+        System.out.println("Car is Moving !!!");
+    }
+}
+
+class Bike implements Vehicle
+{
+    public void move()
+    {
+        System.out.println("Bike is Riding !!!");
+    }
+}
+
+class Train implements Vehicle
+{
+    public void move()
+    {
+        System.out.println("Train is Running !!!");
+    }
+}
+
+
+class Travel
+{
+    Vehicle V;
+
+    Travel(Vehicle V)
+    {
+        this.V = V;
+    }
+
+    void setVehicle(Vehicle V)
+    {
+        this.V=V;
+    }
+
+    void journey()
+    {
+        V.move();
+    }
+}
+
+
+public class Demo1
+{
+    public static void main(String[] args) 
+    {
+        Travel T = new Travel(new Car() );
+        T.journey();
+
+        T.setVehicle(new Bike() );
+        T.journey();
+
+        T.setVehicle(new Train() );
+        T.journey();
+    }
+}
+
+
+Interview Questions
+===================
+
+Q. What is Tight Coupling? When does it occur?
+Q. What is Loose Coupling? How is it Different from tight coupling?
+Q. What are the 3 rules to achieve loose coupling between objects?
+Q. Why are interfaces mandatory for achieving loose coupling ?
+
+
+Q. If I declare an interface reference variable but still assign it with 'new' inside the class
+Ex : Vehicle vh = new Car();  is it loose coupling?
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 2.6 (12-06-2026) 
+--------------------
+
+											====================
+											Dependency Injection
+											====================
+------------------------------
+What is Depenedency Injection ?
+------------------------------
+--> The process of providing (injection) the dependency object into the dependent class from outside 
+    rather then letting the dependent class create it internally is called as "Dependency Injection (DI)".
+
+-----------------------------
+Types of Dependency Injection
+-----------------------------
+1. Constructor Injection
+2. Setter Injection.
+3. Interface Injection.
+4. Field Injection.
+
+
+What is a Design Pattern ?
+--------------------------
+--> A DP is the best solution identified to avoid a repeating problem in application development.
+--> DI & DL are two Design pattern which follows IOC design principle.
+
+
+Developer Responsibility without IOC
+------------------------------------
+1. Create dependent class as well as dependency class.
+2. Create object for dependent class as well as dependency class.
+3. Inject dependency object into Dependent object.
+
+
+Developer Responsibility with IOC
+---------------------------------
+1. Create dependent class as well as dependency class.
+2. Spring Container will create object for dependent class as well as dependency class.
+3. Spring Container will Inject dependency object into Dependent object.
+
+
+What is IOC ?
+-------------
+--> Inversion of Control is a Design Principle, where the reponsibilities like creating the objects and managing
+    the objects are transferred from the programmer to IOC container.
+
+--> Here, the programmer is only responsible for developing the classes with the required functionalities.
+    The Objects creation and managing will be taken care by a container.
+
+
+
+Note :
+------
+Tomcat's Servlet Container     - Catalina
+Spring's Equivalent            - Spring IOC Container / Spring DI Container
+
+-- Both follow the same IOC design principle.
+
+
+What is Spring Container ?
+--------------------------
+--> The Spring Container is the heart of the Spring Framework.
+--> It implements the IOC design principle using the Dependency Injection pattern.
+
+
+Note:
+-----
+-- In Spring Boot Application, you will never write 'new ServiceClass()' or manually call setters to wire object.
+-- Spring Container does all of this Automatically behind the scene using Dependency Injection.
+
+
+Spring Uses Dependency Injection
+--------------------------------
+The Spring Framework container is implemented using the Dependency Injection Pattern.
+That is why it is called:
+- Spring IoC Container. (implements IoC design principle)
+- Spring DI  Container. (uses DI pattern specificaly)
+
+
+In Spring, the Container Automactically :
+------------------------------------------
+-- Creates All dependent, dependency, and independent objects
+-- Injects dependency objects into dependent objects
+-- Manages complete object lifecycle - intialization, use, & destrcution.
+
+
+===================
+Interview Questions
+===================
+
+Q. What is IOC ?
+Q. What is DI ?
+Q. Why is Spring Container called an IoC Container or DI Container ?
+Q. What are the Types of Dependency Injection ?
+Q. Can u give a real-world analogy for IoC outside of Spring ?
+Q. What does the Spring Container do ?
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+Lec 2.6 (15-06-2026) 
+--------------------
+
+What is XML , its Purpose ?
+------------------------------
+--> It stands for eXtensible Markup Language.
+--> Purpose:
+
+1. Meanigful Information / to prepare Structured Document.
+
+amir.xml
+----------
+<AKProduction>
+	<Movie>
+		<Moviename> Tare Zameen Par </Moviename>
+		<Actorname> Darsheel Safary </Actorname>
+		<Releaseyear> 2007 </Releaseyear>
+	</Movie>
+
+	<Movie>
+		<Moviename> Dhobi Ghat </Moviename>
+		<Actorname> Amir Khan   </Actorname>
+		<Releaseyear> 2010 </Releaseyear>
+	</Movie>
+
+</AKProduction>
+
+
+2. To provide data between to indepedent application(Microservvices).
+
+
+What is JSON ?
+----------------
+--> JSON stands for Java Script Object Notation.
+--> it is used provide data between to indepedent application(Microservices)
+   
+    KEY    VALUE
+{
+	"rno" : 101
+	"name": "sachin dhane",
+	"per" : 75.57
+	"contact": ["112233445", "9988776655"]
+}
+
+
+Q. What does the Spring Container do? 
+Ans:
+In Spring, the container automatically:
+• Creates all dependent, dependency, and independent objects 
+• Injects dependency objects into dependent objects 
+• Manages complete object lifecycle — initialisation, use, and destruction
+
+
+How it can do ?
+---------------
+--> To provide configuration details to spring container to perform above task we need XML File.
+    That XML file is called as Spring Configuratin XML File.
+
+--> Spring configuration file can have any name.
+
+--> Your application can have one or more xml(configrations) file.
+that is
+	In large applications, developers often separate configuration files layer-wise, such as: 
+	• Presentation Layer Configuration 
+	• Business Layer Configuration 
+	• Data Access Layer Configuration
+
+
+config.xml
+----------
+<beans>
+	<bean id="car" class="com.pack.Car">
+		
+	</bean>
+
+	<bean id="bike" class="com.pack.Bike">
+		
+	</bean>
+
+	<bean id="train" class="com.pack.Train">
+		
+	</bean>
+
+	<bean id="travel" class="com.pack.travel">
+		
+	</bean>
+
+</beans>
+
+
+Note:
+-----
+Vehicle is an interface , interface can not be instantiated, so it should not be part of beans.
+
+
+Important
+----------
+When working with Spring Boot, we primarily use Annotation-based Configuration. Spring 
+Boot does not encourage XML-based configuration, and in most cases, XML configuration is 
+not used at all. 
+
+
+Interview Questions
+-----------------------
+What is a Spring Bean? 
+What is a Spring Configuration File? 
+What is the root tag and parent tag of the Spring XML config file?
+What are the two important attributes of the <bean> tag? 
+How many Spring configuration XML files can you write in a project? 
+Is XML configuration allowed in Spring Boot?
+What is JSON and how is it related to XML? 
+What is the fully qualified class name? Give an example. java.util.Scanner
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+Lec 2.7 (16-06-2026) 
+--------------------
+
+   											=================
+   											Spring Container 
+  											=================
+
+-------------------------------------------------
+How Spring Container knows about Configurations ?
+-------------------------------------------------
+-->
+
+ Spring Supports two approaches for configuring beans:
+ -----------------------------------------------------
+	1. Using XML file Configuration
+		-- Uses .xml file for configuration
+		-- It is kept in src/main/resources
+		-- It can also kept in any folder of System in that case you have to provide absolute path.
+
+	2. Annotation Based Configuration
+		-- @Configuration
+		   class App
+		   {
+		   		// java code
+		   }
+
+Note :
+------
+--> Spring Framework uses Only XML file configuratons
+--> Spring Boot uses both XML file as well as Annotations based configurations.
+--> Now a days Spring Boot is 100% annotation-based.
+
+
+Q. Who is Spring Container ?
+-----------------------------
+--> Spring Container is a pre-defined class(Implementation class) which implements either 
+	'BeanFactory' interface or 'ApplicationContext' interface.
+
+--> Spring provides Two Types of Containers:
+	1. BeanFactory Container
+	2. ApplicationContext Container
+
+
+Diagram 1:
+----------
+								 	
+BeanFactory 				       <-----(extends)               ApplicationContext	
+(Parent interface)												 (Child interface)	
+
+	^										  /						   ^                 \
+	|										 /						   |                  \
+	|										/						   |		           \
+XmlBeanFactory   classPathXmlApplicationContext  FileSystemXmlApplicationContext  AnnotationConfigApplicationContext
+(impl class)				(impl class)                 (impl class)                        (impl class)
+					
+
+
+interface ApplicationContext extends BeanFactory
+{
+	
+}
+
+
+Diagram 2:
+----------
+
+BeanFactory (interface)
+|
++-- XmlBeanFactory (class)
+
+
+ApplicationContext (interface)
+|
++-- ClassPathXmlApplicationContext (class)
+|
++-- FileSystemXmlApplicationContext (class)
+|
++-- AnnotationConfigApplicationContext (class)
+	 
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+Lec 3.1 (17-06-2026) 
+--------------------
+
+===========
+ Maven Tool.  --> Compilation -- Deployable JAR/WAR
+===========
+
+
+Class Path:
+-----------
+--> The classpath is an environment variable that tells the java compiler where to find the external class file
+	(inside JAR's).
+
+
+
+What is the Build Proccess ?
+----------------------------
+--> Build Proccess means converting the source code written by the programmer into an executable program
+    (JAR or WAR file) that can be deployed on a server.
+
+
+What is a Maven ?
+-----------------
+--> It is a Build Tool that Automates the entire build proccess.
+
+
+What is pom.xml. ?
+-----------------
+--> POM - Project Object Model
+--> Every Maven Project must have exactly one pom.xml in the root folder.
+--> This file is what identifies a java project as a Maven project. If you delete it, Maven stops working.
+
+--> Main purpose : Configure the dependencies (JAR files) required by the project.
+
+Example :
+---------
+
+		<dependency>
+			<groupId>    org.postgresql </groupId>
+			<artifactId> postgresql     </artifactId>
+			<version>    42.7.11        </version> 
+		</dependency>
+
+
+--> Every JAR file on the internet is uniquely identified by three places of information called coordinates.
+	
+	1. groupId    :   Unique ID of the Organization.
+	2. artifactId : Name of the Specific JAR / project name
+	3. version    :   version of the JAR
+
+
+
+Transitive Dependencies
+------------------------
+--> With Maven you only need to declare ONE dependency, Maven downloads all the rest dependency automatically.
+--> When JAR A depends on JAR B and JAR B depends on JAR C 
+
+Example :
+---------
+
+Note :
+------
+Developed Application chi, Compilation PASUN Depolyable JAR banavne(buil-proccess) ya sathi we use Maven Tool.
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 3.2 (18-06-2026) 
+--------------------
+
+=================
+Maven Repository
+=================
+--> A storage location(directory) where JAR files are stored and managed.
+--> When you declare a dependency in pom.xml, Maven searches for the JAR in repositories.
+
+	1. Local   Repository : Local System path [/Users/pratikshedge/.m2/repository]
+	-----------------------
+
+	2. Central Repository : https://repo.maven.apache.org/maven2
+	-----------------------
+
+	3. Remote  Repository : Your Companies private server.
+	-----------------------
+
+--> Maven maintains all the dependencies/libraries required for developing Java Project with different
+    technologies, tools and frameworks with different versions in a place called central repository.
+
+--> When you are creating a new project from your IDE, maven will download the required dependencies
+    from central repository.
+
+--> The downloaded files will be stored into a local repository.
+--> In Every developer's machine, maven local repository will be created.
+--> Before downloading any dependencies from central repository, Maven will first check for them in 
+    the local repository.
+
+--> If exists in local repository, then Maven will reuse them from the local repository.
+--> If it is not thier, then it will search in Central repository, if found then it is downloaded 
+    & stored into local repo otherwise error.
+
+
+
+Important Point for me :
+------------------------
+
+====================
+Scope in Dependency    <scope> test </scope>
+====================
+
+1. compile (default) :
+2. test
+3. runtime
+4. provided
+5. system
+6. import
+
+-----------------
+Maven Archetypes
+-----------------
+--> It decides the Project template.
+--> Instead of creating a Maven Project folder structure manually, you choose an archetype and Maven generates
+    the correct directory structure for that type of Project automatically.
+
+
+The Two Important archetypes are,
+    -- maven-archetype-quickstart  -- used for creating console application
+    -- maven-archetype-webapp      -- used for creating web application
+
+
+
+Interview Questions
+-------------------
+Q. What are the types of Maven Repositories ?
+Q. In What order does Maven Search for dependencies ?
+Q. What is Local Repository in Maven? Where are it located?
+Q. What is Dependency Scope in Maven? Name the scopes.
+Q. What is Maven Archetype ?
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 3.3 (19-06-2026) 
+--------------------
+
+Phases of Application
+----------------------
+
+Developer Code
+      |
+      v
++------------+
+|    DEV     |	(Development)
++------------+
+      |
+      v
++------------+
+|    TEST    |  (Testers / QA Team)
++------------+
+      |
+      v
++------------+
+|    UAT     |  (User Acceptance Test) Pre-Production Envirnment
++------------+
+      |
+      v
++------------+
+|    PROD    |  (Production) LIVE
++------------+
+
+
+
+================
+Maven Commands
+================
+
+1. compile:
+-----------
+--> compile the source code files, the generated files are stored into target folder.
+
+2. test :
+---------
+--> compile & execute test case
+
+3. test-compile : 
+-----------------
+--> only compiles test cases
+
+4. package :
+------------
+--> prepare deployable JAR into target folder of your project
+
+5. install :
+------------
+-->  Install your JAR in Local Repository
+
+
+
+--------------------
+How to install Maven 
+--------------------
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 4.1 (23-06-2026) 
+--------------------
+
+
+===========================
+First Spring Application
+===========================
+
+Install IDE
+--> spring.io
+
+
+You must have to create 3 files -
+	0. Add dependency in pom.xml
+	1. Spring Bean (.java)           
+	2. Cofiguration file (config.xml) : <bean> tags
+	3. main file   (App.java) : which has main method
+
+
+0. Add dependency in pom.xml
+--------------------------------
+	<dependency>
+  		<groupId>org.springframework</groupId>
+  		<artifactId>spring-context</artifactId>
+         <version>7.0.5</version>
+    </dependency>
+
+1. Spring Bean (.java) 
+------------------------
+package com.tca.bean;
+
+public class WelcomeBean 
+{
+	public String getMessage()
+	{
+		return "Welcome to Techno Comp Academy";
+	}
+}
+
+2. Cofiguration file (config.xml) : <bean> tags
+-----------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- bean definitions here -->
+    
+	<bean id="wc" class="com.tca.bean.WelcomeBean">
+	
+	</bean>
+	
+	
+</beans>
+
+
+3. main file   (App.java) : which has main method
+---------------------------------------------------
+package com.tca;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.tca.bean.WelcomeBean;
+
+public class App 
+{
+    public static void main(String[] args) 
+    {
+    	//Step 1 : Creating and Starting Container
+       ApplicationContext context = new ClassPathXmlApplicationContext("config.xml");
+       
+       // Step 2: Get the object of Bean 
+       
+       Object obj =  context.getBean(WelcomeBean.class);
+       WelcomeBean wb = (WelcomeBean) obj;
+              
+       // Step 3 : Call bean method / Bussiness Logic
+       String msg = wb.getMessage();
+       
+       System.out.println(msg);
+    }
+}
+
+
+Three Steps to call bean methods
+-----------------------------------
+Step 1 : Creating and Starting Container
+Step 2 : Get the object of Bean 
+Step 3 : Call bean method / Bussiness Logic
+
+
+What is a Spring Bean Class?
+------------------------------------ 
+--> Any Java class whose object lifecycle is managed by the Spring Container is called a Spring Bean class.  
+--> For the first example, we write a simple independent class (no dependencies on other classes).
+Example: WelcomeBean
+
+Spring Configuration XML 
+----------------------------
+--> The Spring Configuration XML file is where you register your classes with the Spring Container. 
+--> Spring reads this file on startup, identifies the <bean> tags, and creates objects for each registered class. 
+
+
+What getBean() Does
+-------------------
+--> getBean() is a method provided by both BeanFactory and ApplicationContext interfaces.  
+--> It retrieves the Spring-managed object (bean) by its registered ID from the container.
+
+Note: 
+-----
+--> If bean is not found or If the IDs don't match, Spring throws a "NoSuchBeanDefinitionException". 
+--> In ApplicationContext, beans are created at the time container starts.(Early Loading)
+    In BeanFactory, bean are created on a call of getBean() method [Lazy Loading]
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 4.2 (24-06-2026) 
+--------------------
+
+
+=========================
+Dependency Injection
+=========================
+
+
+Rough work : To visualize What is mean by depdendency Injection
+
+
+class Student
+{
+	private int rno;
+	private String name;
+	private double per;
+
+	public Student(int rno, String name, double per)
+	{
+		this.rno = rno;
+		this.name = name;
+		this.per = per;
+	}
+}
+
+
+Student ob = new Student(101,"Sachin Dhane", 75.57);
+
+
+
+
+class A      <--- Dependent class
+{ 
+	B obb;   <--- Dependency class  ref
+
+	public A(B obb)
+	{
+		this.obb = obb;
+	}
+
+}
+
+B x = new B();
+
+A  ob = new A(  x );
+
+
+Types of dependecy Injection
+------------------------------
+1. Constructor Injection
+2. Setter Injection
+3. Interface Injection
+4. Field Injection
+
+
+Constructor Injection
+----------------------
+--> Constructor Injection means providing the dependency object to the dependent class through its 
+constructor parameter.  
+
+Example:
+class A      <--- Dependent class
+{ 
+	B obb;   <--- Dependency class
+
+	public A(B obb)
+	{
+		this.obb = obb;
+	}
+
+}
+
+-------------------------------------------------------
+Constructor Injection for  Primitive Value dependecies
+---------------------------------------------------------
+
+1) If One field is there
+
+public class WelcomeBean 
+{
+	private String message;
+	
+	public WelcomeBean(String message)
+	{
+		this.message = message;
+	}
+	
+	public String getMessage()
+	{
+		return message;
+	}
+}
+
+<bean id="welcomeBean" class="com.tca.bean.WelcomeBean">
+		<constructor-arg  name="message"  value="Hello Spring !!"/>
+</bean>
+
+2) If there are multiple field in a class
+
+public class WelcomeBean 
+{
+	private int   id;
+	private String message;
+	
+	public WelcomeBean(int id, String message)
+	{	
+		this.id      = id;
+		this.message = message;
+	}
+	
+	public String getMessage()
+	{
+		return message;
+	}
+	
+	public int getId()
+	{
+		return id;
+	}
+}
+
+<bean id="welcomeBean" class="com.tca.bean.WelcomeBean">
+		<constructor-arg  name="id"       value= "101"/>
+		<constructor-arg  name="message"  value="Hello Spring !!"/>
+</bean>
+
+Note:
+----
+We can use 'index' attribute insted of 'name'.
+
+<bean id="welcomeBean" class="com.tca.bean.WelcomeBean">
+		<constructor-arg  index="0"       value= "100001"/>
+		<constructor-arg  index="1"  value="Hello Spring from TCA!!"/>
+</bean>
+
+
+
+
+--------------------------------------------
+Constructor Injection for  Reference Type dependencies
+--------------------------------------------
+
+class Address
+{
+	
+	String city;
+	String pincode;
+}
+
+class Customer
+{
+	int cid;
+	String name;
+	Address address;
+}
+
+<bean id="addr"   class="com.tca.bean.Address">
+		<constructor-arg name="city" value="Sangvi"/>
+		<constructor-arg name="pincode" value="411027"/>
+	</bean>
+	
+	<bean id="customer"  class="com.tca.bean.Customer">
+		<constructor-arg name="customerId"   value="101"/>
+		<constructor-arg name="customerName" value="Sachin Dhane"/>
+		<constructor-arg name="address"      ref  ="addr"/>
+	</bean>
+
+
+
+
+
+Q. which are the Attibutes are for <constructor-arg>
+Ans:
+name
+value
+ref
+index
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 4.3 (25-06-2026) 
+--------------------
+
+-----------------
+Setter Injection
+-----------------
+--> Setter Injection means providing the dependency object to the dependent class through a public 
+setter method.
+
+--> Spring first creates the dependent object using the "no-arg" constructor, then calls the setter method to inject the dependency. 
+
+-------------------------------------------------------
+Setter Injection for  Primitive Value dependecies
+---------------------------------------------------------
+	<bean id="welcomeBean" class="com.tca.bean.WelcomeBean">
+		
+		<property name="id" value="101"/>
+		<property name="message" value="Hello Spring - TCA!!"/>
+		
+	</bean>
+
+-------------------------------------------------------
+Setter Injection for  Reference Type dependecies
+---------------------------------------------------------
+
+<bean id="addr"   class="com.tca.bean.Address">
+		<property name="city"   value="Sangvi"/>
+		<property name="pincode" value="411027"/>
+	</bean>
+	
+	<bean id="customer"  class="com.tca.bean.Customer">
+		<property name="customerId"   value="101"/>
+		<property name="customerName" value="Sachin Dhane"/>
+		<property name="address"      ref  ="addr"/>
+	</bean>
+
+
+
+Note:
+----
+<property> tag has attributes :name ref value 
+
+
+Q. The doubt is there are two dependencies are available. 
+   One dependency I want to inject through constructor.
+   Other dependency I want to inject through setter. 
+   Is it possible or not? 
+Ans:
+	yes
+
+Example: Student(rno, name, fees, passport )
+                      CI            SI
+                      
+
+Knowledege: Immutable Object
+-------------------------
+final class A
+{
+	private final int i=10;
+}
+
+
+A ob = new A();
+ob.i = 99;  --> Error
+ob.setI(99);--> Error
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 4.4 (26-06-2026) 
+--------------------
+
+====================
+Circular Dependency
+====================
+--> Suppose if we have two classes ServiceA and ServiceB, where ServiceA depends on ServiceB AND
+    serviceB depends on ServiceA, then it is circular dependency.
+
+--> If both the classes have defined a constructor injection for injecting its dependency object,
+    then we will get "BeanCreationException".
+
+--> Now, I want to solve this Issue, then-
+    One of class from circular dependency must have Setter Injection.
+
+
+Note:  In this case, config file must have <bean> tag defined which has <property> tag before <constructor> tag.
+-----
+
+How to resolve Circular dependency Problem
+----------------------------------------------
+Rule 1:
+		At least ONE of the two beans must use 
+		Setter Injection (not Constructor Injection) 
+		for its dependency. 
+
+Rule 2:
+		That SAME bean (the one using Setter Injection) 
+		must be configured FIRST in the Spring XML file.
+
+
+If ALL Beans Uses Setter Injection ?
+------------------------------------
+If every class in the cycle uses Setter Injection (none use Constructor Injection), there is NO circular dependency problem at all.
+
+
+Constructor Injection Vs Setter Injection
+--------------------------------------------
+1.Constructor Injection  : Compulsion/mandatroy
+   Setter      Injection  : Optional
+
+2.Constructor Injection  : Imuutable Object
+   Setter      Injection  : Mutable object
+
+3.Constructor Injection  : Can NOT solve circular dependecy problem
+   Setter      Injection  : Can solve circular dependecy problem
+
+4.Constructor Injection  : You can inject ALL multiple dependecies at a time
+   Setter      Injection  : You can inject multiple dependecies ONE at a time
+
+
+Interview Questions
+--------------------
+Q. What is Circular Dependency in Spring, and what exception does it throw? 
+
+Q. Why does Circular Dependency fail specifically with Constructor Injection but not always with Setter Injection?
+
+Q. What are the two rules to resolve a Circular Dependency problem in Spring? 
+
+Q.  If three classes A, B, and C form a circular dependency (A-->B --> C --> A), how do you resolve it? 
+
+Q.  What happens if ALL beans in a circular chain use Setter Injection? 
+
+Q. Can one constructor inject multiple dependencies? Can one setter method do the same?
+
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 4.5 (27-06-2026) 
+--------------------
+
+
+---------------
+Bean Autowiring
+---------------
+--> Bean Autowiring is a facility provided by the Spring Container that automatically injects dependency
+    OBJECTS into dependent object without the developer writing a <property> or <constrcutor> tag in XML.
+
+    Note:
+    -----
+    --->  Bean Autowiring is applicable only on "Reference DataType".
+
+
+--> Bean Autowiring means without creating constructor i<constructor-arg>, setter i<property>, dependency object is inject in dependent class, by IOC is called as Bean Autowiring.
+
+--> To do autowiring you must use "autowire" attribute in <bean> tag.
+
+
+There are 4 types of Autowiring ways -
+------------------------------------
+1. no 
+2. byName 
+3. byType
+4. constructor
+
+
+1. no : 
+-------
+--> Default autowire is no.
+--> Means autowiring is disabled.
+
+
+2. byName :
+-----------
+--> It uses Setter Injection.
+--> It Matches for dependency Object reference variable name to bean id, If it matched then it injects 
+    otherwise NOT injected(dependency object remains null).
+
+3. byType :
+-----------
+--> It uses Constructor Injection.
+--> It Matches dependency objects reference Type (Field name) CLASSNAME to bean's CLASSNAME.
+
+4. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MVC-based Frameworks
+--------------------
+--> There are 3 types of MVC frameworks i.e structs, springMVC, JSF
+
+
+
+
+What is Spring Boot?
+--------------------
+--> 
+
+
+
+
+
+
+For form void return type
+for jsp  String return type
+
+for ModelView
+
+
+
+
+
+@SpringBootApplication is the combinatoin of 3 Annotations.
+
+
+1. @SpringBootConfiguration :
+
+
+
+@EnableAutoConfiguration
+jackson
+messageconverters
+dispactherservlet
+
+
+
+@ComponentScan
+
+
+
+
+
+
+
+
+
+Types of Web Servies
+--------------------
+1. SOAP Web Services. : Simple object access protocol
+2. REST Web Services. : Representational State Transfer  
+
+
+
+
+
+What is API ?
+=============
+--> An API is a set of rules that allows one software to interact with another.
+
+
+
+Spring MVC 
+-----------
+--> we have @COntroller which returns "view" i.e either jsp/html 
+
+
+REST API
+--------
+--> @RestController which returns response (primarily json ) to client (browser,postman,frontend) directly.
+
+--> Actually if u want to write a controller which should return the respoinse diretcly to the client (and not 
+    return "view") you have to use two annotations :
+    1. @Controller
+    2. @ResponseBody
+
+--> But @RestController is better always as it is a combiation of @Controller and @ResponseBody.
+
+
+
+@PathVariable
+-------------
+             --> for individual data 
+
+@RequestBody 
+
+
+
+
+
+
+
+
+
