@@ -1,0 +1,17 @@
+package com.tca.entities;
+
+public class Student 
+{
+	private int rno;
+	private String name;
+	private int fees;
+	private Passport passport=null;
+	
+	public Student(int rno, String name, int fees)
+	{
+		this.rno=rno;
+		this.name=name;
+		this.fees=fees;
+	}
+
+}

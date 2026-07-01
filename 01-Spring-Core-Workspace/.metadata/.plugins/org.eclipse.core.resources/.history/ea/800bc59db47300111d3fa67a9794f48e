@@ -1,0 +1,16 @@
+package com.tca;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.tca.entities.WelcomeBean;
+
+public class App {
+    public static void main(String[] args) 
+    {
+    	ApplicationContext context = new ClassPathXmlApplicationContext("config.xml");
+    	WelcomeBean wb = (WelcomeBean)context.getBean("welcome");
+         
+    	System.out.println(wb.getId() + " --> " + wb.getMessage());
+    }
+}

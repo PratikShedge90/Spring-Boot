@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- bean definitions here -->
+    <bean id="addr" class="com.tca.entities.Address">
+    <property name="city" value="Raigad"/>
+    <property name="pincode" value="410205"/>
+    </bean>
+    
+    <bean id="customer" class="com.tca.entities.Customer">
+    <property name="cid" value="111"/>
+    <property name="name" value="Pratik Shedge"/>
+    <property name="address" ref="addr"/>
+    </bean>
+    
+	
+	
+</beans>

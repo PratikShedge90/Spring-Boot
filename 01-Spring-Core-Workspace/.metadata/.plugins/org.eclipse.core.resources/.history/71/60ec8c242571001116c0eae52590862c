@@ -1,0 +1,21 @@
+package com.tca;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.tca.entities.Student;
+
+public class App {
+    public static void main(String[] args) 
+    {
+        ApplicationContext context = new ClassPathXmlApplicationContext("config.xml");
+        Student std = (Student) context.getBean("student");
+        
+        System.out.println("Roll Number 	: " + std.getRno());
+        System.out.println("Name        	: " + std.getName());
+        System.out.println("Fees        	: " + std.getFees());
+        System.out.println("Passport ID 	: " + std.getPassport().getPid() );
+        System.out.println("Passpost Colour : " + std.getPassport().getColour());
+        System.out.println("Passpost Country : " + std.getPassport().getColour());
+    }
+}

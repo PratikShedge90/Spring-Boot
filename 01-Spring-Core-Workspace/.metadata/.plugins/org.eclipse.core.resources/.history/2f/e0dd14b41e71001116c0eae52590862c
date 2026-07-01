@@ -1,0 +1,11 @@
+package com.tca.entities;
+
+public class Passport 
+{
+	private int pid;
+	private String country;
+	private String colour;
+	
+	
+
+}

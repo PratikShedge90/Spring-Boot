@@ -1,0 +1,10 @@
+package com.tca.entities;
+
+public class ServiceA 
+{
+	private ServiceB serviceB;
+	
+	
+	
+
+}

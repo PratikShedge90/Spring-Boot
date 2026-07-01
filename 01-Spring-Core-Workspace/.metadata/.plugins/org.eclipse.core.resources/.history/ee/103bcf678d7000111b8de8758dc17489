@@ -1,0 +1,11 @@
+package com.tca.entities;
+
+public class Customer {
+	
+	private int cid;
+	private String name;
+	private Address address;
+	
+	
+
+}
