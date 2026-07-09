@@ -1,9 +1,0 @@
-package com.tca.entities;
-
-public class WelcomeBean 
-{
-	private int id;
-	private String name;
-	
-	
-}

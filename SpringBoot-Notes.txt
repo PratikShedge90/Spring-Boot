@@ -880,7 +880,6 @@ Ex : Vehicle vh = new Car();  is it loose coupling?
 --------------------
 Lec 2.6 (12-06-2026) 
 --------------------
-
 											====================
 											Dependency Injection
 											====================
@@ -1657,7 +1656,7 @@ Constructor Injection for  Reference Type dependencies
 
 class Address
 {
-	
+	s
 	String city;
 	String pincode;
 }
@@ -1867,7 +1866,7 @@ There are 4 types of Autowiring ways -
 
 
 1. no : 
--------
+------- 
 --> Default autowire is no.
 --> Means autowiring is disabled.
 
@@ -1881,14 +1880,48 @@ There are 4 types of Autowiring ways -
 3. byType :
 -----------
 --> It uses Constructor Injection.
---> It Matches dependency objects reference Type (Field name) CLASSNAME to bean's CLASSNAME.
+--> It Matches dependency objects reference Type (DataType name) CLASSNAME to bean's CLASSNAME.
 
-4. 
-
-
-
+--> If there are Multiple beans defined with different ID's with SAME CLASSNAME then you will
+    get the exception - "UnsatisfiedDependencyException".
 
 
+Solution to UnsatisfiedDependencyException (The Ambiguity Problem)
+------------------------------------------------------------------
+--> Use "primary" attribute.
+
+--> When multiple beans of same type exist & ambiguity occurs, you can mark ONE of them as primary 'true'
+    to give it higher priority.
+
+Example :
+---------
+    <bean id="sb2" class="com.tca.entities.ServiceB" primary="true">
+    </bean>
+
+
+
+4. constructor :
+----------------
+--> It uses Constructor Injection.
+--> Take All points as byType, because "constructor " also matches based on reference variable type CLASSNAME.
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 4.6 (28-06-2026) 
+--------------------
+
+
+===========================
+Applicatoin of Autowiring
+===========================
+
+--> Refer App-09-Autowiring Application & Make your own notes.
+
+InitializingBean,, DisposableBean interface che methods throws Exception krat ahet  tr App.java mdhe tyana handle or declare Nahi krta tee Program execution successfull kasa zla ..? or JVM handle krto ka runtime ?
 
 
 

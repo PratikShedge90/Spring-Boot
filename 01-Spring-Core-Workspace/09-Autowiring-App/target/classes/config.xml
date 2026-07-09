@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<bean id="reportManager" class="com.tca.beans.ReportManager" autowire="constructor"> 
+	</bean>
+	
+	<bean id="pdfReportCreator" class="com.tca.beans.PdfReportCreator">
+	</bean>
+	
+	<bean id="excelReportCreator" class="com.tca.beans.ExcelReportCreator">
+	</bean>
+	
+	
+ 
+	
+</beans>

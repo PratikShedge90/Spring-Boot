@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring accessors="true" comment="Delete 2 elements from project &apos;06-Constructor-Setter-Injection-Assign&apos;&#x0A;- Original project: &apos;06-Constructor-Setter-Injection-Assign&apos;&#x0A;- Original elements:&#x0A;     com.tca.entities.Address.java&#x0A;     com.tca.entities.Customer.java" description="Delete elements" element1="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.tca.entities{Customer.java" element2="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.tca.entities{Address.java" elements="2" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1782450839011" subPackages="false" version="1.0"/>
-</session>
