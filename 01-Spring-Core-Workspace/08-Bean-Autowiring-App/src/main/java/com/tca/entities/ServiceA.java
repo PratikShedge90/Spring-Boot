@@ -4,8 +4,8 @@ public class ServiceA
 {
 	private ServiceB serviceB;
 	
-	public ServiceA() {
-	}
+//	public ServiceA() {
+//	}
 	
 	// Constructor Injection
 	public ServiceA(ServiceB serviceB)
