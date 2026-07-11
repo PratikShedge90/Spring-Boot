@@ -440,6 +440,10 @@ class B
 
 }
 
+Note :
+------
+--> Coupling only applies when one object depends on the other to access it's services.
+
 
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -496,15 +500,6 @@ class Train
 
 	}
 }
-
-
-
-
-
-Note :
-------
---> Coupling only applies when one object depends on the other to access it's services.
-
 
 
 
@@ -1006,7 +1001,7 @@ amir.xml
 </AKProduction>
 
 
-2. To provide data between to indepedent application(Microservvices).
+2. To provide data between to indepedent application(Microservices).
 
 
 What is JSON ?
@@ -1849,7 +1844,7 @@ Bean Autowiring
 
     Note:
     -----
-    --->  Bean Autowiring is applicable only on "Reference DataType".
+    --->  Bean Autowiring is applicable only on "Reference DataType". & Not Applicable for primitive Type.
 
 
 --> Bean Autowiring means without creating constructor i<constructor-arg>, setter i<property>, dependency object is inject in dependent class, by IOC is called as Bean Autowiring.
@@ -1879,8 +1874,8 @@ There are 4 types of Autowiring ways -
 
 3. byType :
 -----------
---> It uses Constructor Injection.
---> It Matches dependency objects reference Type (DataType name) CLASSNAME to bean's CLASSNAME.
+--> It uses Setter Injection.
+--> It Matches dependency objects reference variable Type (DataType name) CLASSNAME to bean's CLASSNAME.
 
 --> If there are Multiple beans defined with different ID's with SAME CLASSNAME then you will
     get the exception - "UnsatisfiedDependencyException".
@@ -1896,6 +1891,9 @@ Solution to UnsatisfiedDependencyException (The Ambiguity Problem)
 Example :
 ---------
     <bean id="sb2" class="com.tca.entities.ServiceB" primary="true">
+    </bean>
+
+    <bean id="sb1" class="com.tca.entities.ServiceB" >
     </bean>
 
 
@@ -1916,38 +1914,297 @@ Lec 4.6 (28-06-2026)
 
 
 ===========================
-Applicatoin of Autowiring
+Application of Autowiring
 ===========================
 
 --> Refer App-09-Autowiring Application & Make your own notes.
 
-InitializingBean,, DisposableBean interface che methods throws Exception krat ahet  tr App.java mdhe tyana handle or declare Nahi krta tee Program execution successfull kasa zla ..? or JVM handle krto ka runtime ?
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 4.7 (29-06-2026) 
+--------------------
+
+
+==================================
+Intializing Bean & Disposing Bean
+==================================
+
+
+What is Bean Intialization ?
+----------------------------
+--> Bean Initialization is logic you want Spring Container to execute IMMEDIATLEY after all dependencies have been
+	injected into a bean.
+
+Flow:
+-----
+	Create Bean   --> 	Injecting Bean 	-->  Initializing Bean 	--> Work/Use of Bean Object  --> Disposing Bean
+
+
+--------------------------------------------------
+Approaches of Initialization Bean & Disposing Bean
+--------------------------------------------------
+
+1. Using Interface 		- InitializingBean, DisposableBean
+2. Using Custom Method  - myInit(), myDestroy()
+3. Using Annotations
+
+
+Example 1: (Using Interface)
+---------
+class MessageSender implements InitializingBean, DisposableBean
+{
+	private String serverIp; 	// 132.45.67.32
+	private int port;
+
+	@Override
+	public void afterPropertiesSet() throws Exception 
+	{
+		// Connection Logic
+	}
+	
+	@Override
+	public void destroy() throws Exception 
+	{
+		// Clean-up Logic
+	}
+}
+
+
+Example 2: (Using Custom Method)
+---------
+class MessageSender
+{
+	private String serverIp; 	// 132.45.67.32
+	private int port;
+
+	public void myInit() 
+	{
+		// Connection Logic
+	}
+	
+	public void myDestroy()  
+	{
+		// Clean-up Logic
+	}
+}
+
+1. Using Interface 		- InitializingBean, DisposableBean
+-----------------------------------------------------------
+
+InitializingBean Interface
+--------------------------
+--> Spring Framework provides a built-in interface called InitializingBean.
+--> It has Exactly ONE abstract method - afterPropertiesSet()
+
+
+DisposableBean Interface
+--------------------------
+--> Spring Framework provides a built-in interface called DisposableBean.
+--> It has Exactly ONE abstract method - destroy()
+
+
+2. Custom Initialization & Destrcution Method
+---------------------------------------------
+--> Instead of Implementing InitializingBean, you can write ANY method of your choice, put the initialization logic
+	inside it, & tell the Spring Container about it using the "init-method" ATTRIBUTE on the <bean> tag.
+
+--> Simillarly, Use can use "destroy-method" attribute on <bean> tag.
+
+Example:
+--------
+
+<bean id="messageSender" class="com.tca.beans.MessageSender" init-method="myInit" destroy-method="myDestroy">
+</bean>
+
+
+
+--------------------------
+What is Bean Destruction ?
+--------------------------
+--> Bean Destruction is logic you want Spring Container to execute 'AUTOMATICALLY' right BEFORE a bean is destroyed.
 
 
 
 
 
+---------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 4.8 (30-06-2026) 
+--------------------
+
+
+====================
+Interface Injection
+====================
+
+
+Constuctor Injection : 
+----------------------
+--> Dependecy Obj is injected into Dependent class using Parametrized construtor.
+
+Setter Injection :
+------------------
+--> Dependecy Obj is injected into Dependent class using setter Method
+
+
+---------------------
+Interface Injection :
+---------------------
+--> the Spring Container injects a dependency by calling a METHOD PROVIDED BY AN INTERFACE.
+--> Note: Spring has Limited Support for Interface Injection
+
+
+
+Interface Injection is implement using 2 interface -
+====================================================
+
+1. BeanNameAware  - setBeanName(String name)
+-------------------------------------------
+--> Bean know to name of bean in <bean> tag.
+--> it is used in Logging.
+
+2. ApplicationContextAware  - setApplicationContext(ApplicationContext applicationContext)
+-----------------------------------------------------------------------------------------
+--> ApplicationContextAware allows a bean to gain a reference to the ApplicationContext 
+(the Spring Container itself) that created it.
+
+Note:
+-----
+--> "name" & "id" attributes in <bean> tag are similar
+
+
+class Student
+{
+	rno
+	name
+	per
+
+}
+
+public class ServiceA implements BeanNameAware, ApplicationContextAware		// 1:05:00
+{
+	private String message;
+	
+	private String myBeanName ="sa";
+
+
+	void sendMail()
+	{
+		try
+		{
+				----
+				-----
+				-----   internet is gone, exception is generated
+				-----
+				-----
+		}
+		catch(Excepione e)
+		{
+			e.printStaktrace();
+
+			log.print(myBeanName + "");  --> serviceA : 2026-07-02  22:07 : InternetException
+			
+		}
+	}
+
+
+}
+
+
+================
+Bean Life Cycle
+=================
+
+Four-stage Bean life cycle
+	Creation ---> Injection ----> Service ----> Destroy
+
+
+Life Cycle Order -
+-------------------
+Creation of Bean Object
+Injection
+BeanNameAware
+ApplicationContextAware
+Intializing Bean
+	Intializing Bean -  afterPropertiesSet()
+	Intializing Bean -  Custom Init Method 
+call to service methods
+Disposing Bean
+	Disposing  Bean : destroy()
+	Disposing Bean -  Custom destrory Method
+
+
+Creation ---> Injection ----> Service ----> Destroy
+  (SC)          (SC)           (User)        (SC)
+
+Creation:
+-----------
+--> Bean object is created
+--> It is performed by Spring Container.
+
+Injection:
+----------
+--> dependency Object is injected using setter/construtor
+--> Bean Name Injection through BeanNameAware
+--> Context Injection through  ApplicationContextAware
+--> Intialization of Bean by calling afterPropertiesSet()  & Custom Init Method
+--> It is performed by Spring Container.
+
+Service
+------
+--> Using Bean object you can call service method of that class
+--> Ex: ob.printMessage()
+--> It is performed by user/developer.
+
+Destroy
+-------
+--> Disposing Bean using destroy() & custom-destroy method.
+--> It is performed by Spring Container.
+
+Refer :  10-Interface-Injection-Bean-Lifecycle-App
 
 
 
 
+---------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 5.1 (07-07-2026) 
+--------------------
+
+Q. What is Metadata ?
+----------------------
+--> Data about a Data.
+
+Q. Why XML Is Complicated 
+---------------------------
+XML is a SEPARATE file from your Java class
+In large projects (e.g., 700 classes), the XML file becomes enormous and difficult to 
+navigate. 
+a single missing closing double-quote, an unclosed tag, or closing tags in the wrong order all cause runtime exceptions.
+
+Solution: Annotations
+----------------------
+They are written directly INSIDE the Java class (no separate file needed), and they have far simpler syntax than XML.
+
+What is Annotation?
+----------------------
+Ex. @Component
+The @ symbol tells the compiler 'this is an annotation'
 
 
 
 
+---------------------------------------------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
+--------------------
+Lec 5.2 (08-07-2026) 
+--------------------
 
 
 
@@ -1971,11 +2228,6 @@ MVC-based Frameworks
 --> There are 3 types of MVC frameworks i.e structs, springMVC, JSF
 
 
-
-
-What is Spring Boot?
---------------------
---> 
 
 
 
