@@ -2779,7 +2779,8 @@ What is properties file ?
 Placeholders - Linking @Value to a Properties File Key
 --------------------------------------------------------
 --> Instead of hardcoding a literal value inside @Value(...), you can reference a KEY from the properties file
-	using a placeholder. A placeholder is written as " ${ keyName } " .
+	using a placeholder. 
+-->	A placeholder is written as " ${ keyName } " .
 
 Example :
 --------
@@ -2850,6 +2851,162 @@ private String fromAddress;
 What Happens If @PropertySource is Removed ?
 ============================================
 --> Any @Value placeholder then has no source to resolve against, & Spring throws an exception at startup.
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+--------
+Lec 5.9
+--------
+
+ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+
+--> When the Container is Started All Bean Objects are Register in Spring Context (IOC).
+
+
+Q. What is Scope ?
+-------------------
+--> Scope Tells Spring Container TWO things about a Bean class:
+    1. How many objects should the container create for this bean class ?
+    2. When should those objects be created ?
+
+===========
+Beans Scope
+=========== 
+--> There are 5 Types of Bean Scopes -
+	1. Singleton Scope
+	2. Prototype Scope
+	3. Request   Scope
+	4. Session   Scope
+	5. Application Scope
+
+1. Singleton Scope:
+-------------------
+--> Only ONE object created for bean class; the SAME object reused by the container always.
+--> By Default Every Bean Object scope is '/]\singleton scope'.
+--> Singleton scope By-Default does Eager Initialization of Bean Object. If you want late Initialization then use
+    @Lazy.
+
+Example:
+--------
+@Component
+@Scope("singleton")
+@Lazy
+public class ServiceA 
+{
+	public ServiceA()
+	{
+		System.out.println("Constructor Invoked !!");
+	}
+
+}    
+
+
+2. Prototype Scope :
+--------------------
+--> Bean object is not created when the container start.
+--> The Spring Container creates a NEW object evert time the Bean is Requested.
+	i.e Every getBean() Method call, & Every Dependency Injection point, gets it's own Fresh/NEW object.
+
+--> prototype scope by-default does lazy Initialization of Bean object.
+
+Example :
+---------
+@Component
+@Scope("prototype")
+public class ServiceA 
+{
+	public ServiceA()
+	{
+		System.out.println("Constructor Invoked !!");
+	}
+}
+
+
+
+3. Request Scope
+----------------
+--> One new Object per HTTP REQUEST; destroyed when the request completes.
+
+
+4. Session Scope
+----------------
+--> One new Object per USER SESSION; destroyed when the session expires.
+
+
+5. Application Scope
+--------------------
+--> One Object for the ENTIRE APPLICATION LIFETIME; destroyed when the app goes down.
+
+
+======
+@Lazy
+======
+--> Create Bean Object When user needs it.
+--> It means Bean Object is not created when the Container starts.
+
+Example:
+-------
+@Component
+@Lazy
+public class ServiceA 
+{
+	public ServiceA()
+	{
+		System.out.println("Constructor Invoked !!");
+	}
+}
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
