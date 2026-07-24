@@ -14,5 +14,7 @@ public class App {
     	
     	
     	context.close();
+    	
+    	System.out.println("**************End of Application***************");
     }
 }

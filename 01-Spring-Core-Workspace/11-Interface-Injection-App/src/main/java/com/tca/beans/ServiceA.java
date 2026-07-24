@@ -2,10 +2,12 @@ package com.tca.beans;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-public class ServiceA implements BeanNameAware, ApplicationContextAware
+public class ServiceA implements BeanNameAware, ApplicationContextAware, InitializingBean, DisposableBean
 {
 	private String message;
 	
@@ -42,7 +44,28 @@ public class ServiceA implements BeanNameAware, ApplicationContextAware
 		this.myContext = context;
 		System.out.println("My Spring Container Name : " + context);
 	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception 
+	{	
+		System.out.println("Initialize the Bean : afterPropertiesSet() Method ");
+	}
 	
+	@Override
+	public void destroy() throws Exception 
+	{	
+		System.out.println("Disposing Bean : destroy() Method ");
+	}
+
+	public void myInit()
+	{
+		System.out.println("Initialize Bean : Custom myInit Method ");
+	}
+	
+	public void myDestroy()
+	{
+		System.out.println("Disposing Bean : Custom myDestroy Method");
+	}
 	
 	
 

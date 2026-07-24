@@ -2169,7 +2169,7 @@ Destroy
 Refer :  10-Interface-Injection-Bean-Lifecycle-App
 
 
-
+------------------------------------------------End of XML ----------------------------------------------------------
 
 ---------------------------------------------------------------------------------------------------------------------
 
@@ -2181,12 +2181,16 @@ Q. What is Metadata ?
 ----------------------
 --> Data about a Data.
 
+@Tca
+class Student
+{
+	
+}
+
+
 Q. Why XML Is Complicated 
 ---------------------------
-XML is a SEPARATE file from your Java class
-In large projects (e.g., 700 classes), the XML file becomes enormous and difficult to 
-navigate. 
-a single missing closing double-quote, an unclosed tag, or closing tags in the wrong order all cause runtime exceptions.
+--> XML is a SEPARATE file from your Java class In large projects (e.g., 700 classes), the XML file becomes enormous and difficult to navigate. a single missing closing double-quote, an unclosed tag, or closing tags in the wrong order all cause runtime exceptions.
 
 Solution: Annotations
 ----------------------
@@ -2197,6 +2201,33 @@ What is Annotation?
 Ex. @Component
 The @ symbol tells the compiler 'this is an annotation'
 
+
+Version 1:
+----------
+
+@Component(value="sa")  <-- Observe Here
+class ServiceA
+{
+	// bean id= sa	
+}
+
+Version 2:
+----------
+
+@Component("sa")		<-- Observe Here
+class ServiceA
+{
+	// bean id=sa	
+}
+
+Version 3:
+----------
+
+@Component 				<-- Observe Here
+class ServiceA
+{
+	// By default Spring Container 	give bean id = serviceA
+}
 
 
 
@@ -2212,6 +2243,613 @@ Lec 5.2 (08-07-2026)
 
 
 
+---------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 5.3 (09-07-2026) 
+--------------------
+
+==============
+@ComponentScan
+==============
+--> Component Auto-scaning is a Spring facility where the FRAMEWORK itself searches for Spring bean classes
+	in your Porject and Automatically registers them with the Application Context(Spring Container) without the Developer writing a single <bean> tag in XML.
+ 
+--> Even though Spring scans Automatically, it cannot scan your ENTIRE hard drive. You must specify it 
+	WHERE to start scanning - this is called the base package i.e Using @ComponentScan Annotations.
+
+
+How we can Specify Base Packages for ComponentScan
+--------------------------------------------------
+
+ @Configuration
+ @ComponentScan(basePackages="com.tca")
+ class AppConfig
+ {
+ 	@Bean
+ 	public Car car()
+ 	{
+ 		return new Car("Electric");
+
+ 		return new Car("Petrol");
+ 	}
+
+ 	@Bean
+ 	public Bike bike()
+ 	{
+ 		:
+ 		:
+ 	}
+ }
+
+Ways-
+@ComponentScan(basePackages="com.tca")
+@ComponentScan(value="com.tca")
+@ComponentScan("com.tca")
+
+
+-----------------------------
+Starting the Spring Container
+-----------------------------
+main()
+{
+	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+}
+
+
+Important Note :
+----------------
+When Container will Start-
+
+(1) @Configuration class
+	Spring checks whether AppConfig is marked @Configuration.
+	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+
+(2) @ComponentScan 
+	It checks whether @ComponentScan is present on AppConfig, and if so, immediately starts Auto Scanning
+	from the specified base package(s) registering all discovered Bean classes into Container.
+
+(3) It then Automatically EXECUTES every @Bean method defined inside AppConfig, storing each returned object
+    into the Container as well.
+
+
+com.tca.Controller
+com.tca.Service
+com.tca.Repository
+com.tca.Model
+
+
+com
+|
+|--> tca
+      |
+      |---> Controller
+      |---> Service
+      |---> Repository
+      			:
+      			:		
+
+com.cdac.Controller
+com.cdac.Service
+com.cdac.Repository
+com.cdac.Model
+
+
+com
+|
+|--> cdac
+      |
+      |---> Controller
+      |---> Service
+      |---> Repository
+      			:
+      			:	
+
+------------------------------------------
+Multiple Base Packages using Curly Braces
+------------------------------------------
+
+@ComponentScan(basePackages={"com.tca", "org.cdac"})
+@ComponentScan(value={"com.tca", "org.cdac"})
+@ComponentScan({"com.tca", "org.cdac"})
+
+String p = "Pratik";
+String []p = {"Pratik","cdac","Spring-Boot"};
+
+
+
+Note :
+------
+@ComponentScan is repeatable Annotation, Used to Specify Multiple Base Packages.
+
+@Configuration
+@ComponentScan(value="com.tca")
+@ComponentScan(value="com.cdac") 
+public class AppConfig
+{
+	// Bean Methods
+}
+
+
+
+
+====================================================
+Multiple Configuration Classes - Using a Class Array
+====================================================
+
+Q. What if, we have Multiple Configuration classes then how Container knows about it?
+-------------------------------------------------------------------------------------
+--> Create an Array of 'Class Type' & Send it to AnnotationConfigApplicationContext constructor.
+
+@Configuration
+class AppConfig1
+{
+	
+}
+
+@Configuration
+class AppConfig2
+{
+	
+}
+
+
+main()
+{
+	-----------
+	Approach 1:
+	-----------
+	Class c1 = AppConfig1.class;
+	Class c2 = AppConfig2.class;
+
+	Class[] c = new Class[]{c1,c2};
+
+	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(c);
+
+	-----------
+	Approach 2:
+	-----------
+
+	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+	 new Class[]{AppConfig1.class, AppConfig2.class}
+	);
+
+}
+
+
+CJ to relate 'Class' Array
+--------------------------
+
+int a[];						<-- Declaration
+int a[] = new int[3];			<-- Declaration + Creation
+int a[] = new int[]{11,22,33};	<-- Declaration + Creation + Initialization
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 5.4 (10-07-2026) 
+--------------------
+
+===========
+@Autowired
+===========
+-->	This Annotation can be used at Field level, Constructor level or setter level.
+--> In Spring Annotations, we got another type of Dependency Injection called as Field Injection.
+--> Field Injection means, Spring will directly inject the dependency Object to the field, 
+	without any need of a contructor or setter method.
+--> For Field Injection, Spring Internally uses Reflection API.
+
+Ex:1
+-----
+@Service
+class SericeA
+{
+	@Autowired
+	ServiceB sb;
+}
+
+
+@Service
+class ServiceB
+{
+	
+}
+
+
+
+Ex:2
+-----
+--> Suppose, If Spring cannot find a "Matching Bean" for Auto-wiring, then it throws 
+	"UnsatisfiedDependencyException".
+
+
+@Service
+class SericeA
+{
+	@Autowired
+	ServiceB sb;
+}
+
+class ServiceB
+{
+	
+}
+
+
+Ex:3
+----
+-->	To make Autowiring in Dependency object as 'Optional', we have to provide  a parameter 'required=false',
+	to the @Autowired Annotation.
+
+
+@Service
+class SericeA
+{
+	@Autowired
+	ServiceB sb;
+}
+
+
+class ServiceB
+{
+	
+}
+
+
+---------------------------------------------------------------------------------------------------------------
+
+@Qualifier: 
+---------------- 
+--> If multiple matching beans are found by the spring, for autowiring then because of ambiguity, again spring throws UnsatisfiedDependencyException.
+
+--> To avoid this exception, we can specify a specific bean name with @Qualifier annotation.
+
+[Paste - 2 Paint Images]
+
+
+@Primary
+---------
+--> This annotation can be used at class-level or at methodlevel.
+--> This annotation can be used to specify that a bean is a default choice for dependency injection, when multiple beans are found of the same type by the spring container.
+	[Paint-image (1)]
+
+--> Suppose, at injection point, if you want to change the bean for dependency injection, then you have to use @Qualifier explicitly.
+
+[Last Paint image]
+
+Mentor note: pls align paint files with taught concept
+
+
+--> @Primary is a default choice and @Qualifier is an explicit choice. 
+--> If both (@Primary & @Qualifier) are used then @Qualifier gets more priority.
+--> Difference : @Qualifier is used at injection point and @Primary is used to declaration level. 
+
+-----------------------------------***********-----------------------------------
+
+Assignment
+------------
+
+          Key    Value
+HashMap<String, Student> hm = new HashMap<>();
+
+String          Student(name, city,per)
+"SB-1"     		Sachin   Sangvi   75.57
+"SB-2"			Sourabh  Aundh    98.76
+
+-- Add 5 students in HashMap
+-- Print All student
+-- Accept key("SB-2") - print date if found otherwise "NOT Found".
+-- Write Method for each.
+
+public void create()
+{
+	// this method will add 5 students in HashMap
+}
+
+public void displayAll()
+{
+	//this method will display all students
+}
+
+public Student getById(String key)
+{
+	
+}
+
+Student s = ob.getById("SB-3")
+
+
+class Student
+{
+	
+}
+:
+:
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+--------------------
+Lec 5.5 (13-07-2026) 
+--------------------
+
+What we have Seen -
+==================
+
+Stereo Types Annotations -
+	-- @Component
+	-- @Controller
+	-- @RestController
+	-- @Service
+	-- @Repository
+
+@Configuration
+@Bean
+@ComponentScan
+
+
+--------------------
+Dependency Injection
+--------------------
+@Autowired
+@Qualifier
+@Primary
+
+
+
+@Configuration
+@ComponentScan("com.tca")
+class AppConfig
+{
+	
+	@Bean
+	Map<String, Student> getStudentStore()
+	{
+		Map<String, Student> hm = new HashMap<>();
+		hm.put("SB-1", new Student("Pratik", "Pune", 90.0));
+		hm.put("SB-2", new Student("Saurav", "Thane", 80.0));
+		
+		return hm;
+	}
+}
+
+
+@Repository
+class Repository
+{
+	@Autowired
+	Map<String, Student> hm;
+
+	@Autowired
+	ServiceA sa;
+}
+
+
+com.tca.model
+class Student
+{
+	
+}
+
+--> Model class is a Class whose objects hold/maintain DATA -- nothing more.
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+Lec 5.6
+--------
+
+class Service
+{
+	@Autowired		<--- Error - Autowired is Applicable Only for Class Type
+	int rno;
+
+	@Autowired
+	private ServiceB sb;
+}
+---------------------------------------------------------------------------------------------------------------------
+
+
+--------
+Lec 5.7
+--------
+
+@Value
+======
+
+--> @Autowired is used to inject Class Type variables.
+--> @Autowired cannot inject Primitive Type variables.
+
+--> So to Inject Primitive Type values like int, double, String etc. we must use @Value Annotations.
+
+Ex 1:
+----
+
+class Student
+{
+	@Value("101")
+	int rno;
+
+	@Value("Sachin")
+	String name;
+
+	@Autowired
+	Address address;
+
+	
+}
+
+
+Ex 2: @Autowired cannot inject Primitive Type variables.
+----
+class Service
+{
+	@Autowired		<--- Error - Autowired is Applicable Only for Class Type
+	int rno;
+
+	@Autowired
+	private ServiceB sb;
+}
+
+
+
+
+Ex 3: Injecting Primitive Dependencies with Hard Coded Values
+----
+
+@Service
+public class AdminService 
+{
+	@Value("http://admin.tca.com")
+	private String adminURL;
+	
+	@Value("7070")
+	private int port;
+	
+	@Value("admin")
+	private String userName;
+	
+	@Value("root@123")
+	private String password;
+	
+	public void printInformation()
+	{
+		System.out.println("You are Connected to : " + adminURL);
+		System.out.println("Port				 : " + port);
+		System.out.println("UserName			 : " + userName);
+		System.out.println("Password			 : " + password);
+	}
+}
+
+
+
+Problem :
+---------
+ Giving Hardcoded value to @Value Annotation is not a good practice.
+ Because - To make any Change you have to 
+ 	-- Open the Source code file & make the changes.
+ 	-- recompile the source code.
+ 	-- recompile & execute the test cases.
+ 	-- Re-packaging the Application into new JAR file.
+ 	-- Re-deploy the Applcation.
+
+So, Solution to above problem is -
+Use
+	1. Create properties file  E.g adminconfig.properties
+	2. Use Placeholders with @Value Annotations - To Link Placeholder to property value
+	   E.g.
+	   		@Value("${admin.url}")
+
+	3. Use @PropertySource() Annotation to mentoin of Properties file.
+	   E.g. @PropertySource("adminconfig.properties")
+
+
+@PropertySource()
+------------------
+--> It is used to Specify name of Properties file(e.g. config.properties)
+--> Properties File are Kept in folder src/main/resources
+--> It is repeatable Annotation.
+	Ex:
+		@PropertySource("adminconfig.properties")
+		@PropertySource("emailconfig.properties")
+		@PropertySource("dbconfig.properties")
+					OR
+		@PropertySource({"adminconfig.properties","emalconfig.properties", "dbconfig.properties"})
+	
+--> It is written at Cofiguration class.
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+--------
+Lec 5.8
+--------
+
+What is properties file ?
+-------------------------
+--> A properties file is an external file (separate from your java source code) used to store application
+	configuration data in simple key-value pairs.
+
+--> It's Extension must be .properties
+    Ex: application.properties, config.properties
+
+
+Placeholders - Linking @Value to a Properties File Key
+--------------------------------------------------------
+--> Instead of hardcoding a literal value inside @Value(...), you can reference a KEY from the properties file
+	using a placeholder. A placeholder is written as " ${ keyName } " .
+
+Example :
+--------
+
+myapp.properties
+----------------
+# Admin Server Configurations
+
+admin.url=http://admin.tca.com
+admin.port=7072
+admin.user=admin
+admin.password=root@123
+
+
+AdminService.java
+-----------------
+
+@Service
+public class AdminService 
+{
+	@Value("${admin.url}")
+	private String adminURL;
+	
+	@Value("${admin.port}")
+	private int port;
+	
+	@Value("${admin.user}")
+	private String userName;
+	
+	@Value("${admin.password}")
+	private String password;
+	
+	public void printInformation()
+	{
+		System.out.println("You are Connected to : " + adminURL);
+		System.out.println("Port				 : " + port);
+		System.out.println("UserName			 : " + userName);
+		System.out.println("Password			 : " + password);
+	}
+}
+
+
+Loading Multiple Properties Files
+==================================
+myapp.properties 	--  Admin Service Configurations
+email.properties 	--  Email Service Configurations
+
+
+
+Duplicate Key Conflict - What Happens When Both Files Share a Key
+=================================================================
+ myapp.properties
+ port=7070
+
+ email.properties
+ port=9090
+
+--> Spring Loads Properties files in the ORDER they are listed in the @PropertySource Annotations.
+--> When the same key is found in a later file, its value OVERRIDES the value from the Earlier File.
+
+
+Default Values in @Value Placeholders
+=====================================
+@Value("${from.address:noreply@gmail.com}")
+private String fromAddress;
+
+
+What Happens If @PropertySource is Removed ?
+============================================
+--> Any @Value placeholder then has no source to resolve against, & Spring throws an exception at startup.
 
 
 
@@ -2219,6 +2857,7 @@ Lec 5.2 (08-07-2026)
 
 
 
+---------------------------------------------------------------------------------------------------------------------
 
 
 
