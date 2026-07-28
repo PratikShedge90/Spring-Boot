@@ -2962,50 +2962,22 @@ public class ServiceA
 
 ---------------------------------------------------------------------------------------------------------------------
 
+--------
+Lec 5.10
+--------
+
+--> Singleton Per Container : if two containers are started, two singleton objects are created
 
 
+--> Means Container First byType ne injection kraycha  try krto, ani jr tyala multiple qualifying beans
+    bhetle tr to byName ne try krto.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Working of @Autowired -
+=======================
+--> It does Injection through "byType", but if you have Multiple Beans with SAME Type then it goes
+	with "byName", after this also, if you doesn't succed to Match Bean then you will get an 
+	"UnsatisfiedDependencyException".
 
 
 
@@ -3015,6 +2987,243 @@ public class ServiceA
 
 
 ---------------------------------------------------------------------------------------------------------------------
+
+--------
+Lec 5.11
+--------
+
+
+@Scope("singleton")
+class ServiceA
+{
+	
+}
+
+
+Q. Is singleton scope creates only one object ?
+-----------------------------------------------
+--> Yes, But Per Container.
+	We can create many object per container of that bean which is having singleton scope.
+
+
+Now, Situation is -
+In a Project there is a class like Database Configuration, Mail Configuration etc., you want ONLY ONE object
+of this class has to be get created through-out the application.
+
+Solution - Sigleton Design Pattern
+
+
+Approach 1 : Early Initialization Singleton Variable
+======================================================
+
+public class Car 
+{
+	private static Car ob = new Car();
+	
+	private Car()
+	{
+		System.out.println("Constructor Car");
+	}
+	
+	public static Car getInstance()
+	{
+		return ob;
+	}
+}
+
+Advantage 	 : Thread Safety
+Disadvantage : Memory Wastage
+
+
+Approach 2 : Late Initialization Singleton Variable
+======================================================
+
+public class Car 
+{
+	private static Car ob=null;
+	
+	private Car()
+	{
+		System.out.println("Constructor Car");
+	}
+	
+	public static Car getInstance()
+	{
+		if(ob==null)
+		{
+			ob = new Car();
+		}
+		return ob;
+	}
+}
+
+
+
+Approach 3 : Lazy/Late Initialization Singleton Variable
+=========================================================
+
+public class Car 
+{
+	private static Car ob=null;
+	
+	private Car()
+	{
+		System.out.println("Constructor Car");
+	}
+	
+	public synchronized static Car getInstance()
+	{
+		if(ob==null)
+		{
+			ob = new Car();
+		}
+		return ob;
+	}
+}
+
+
+Advantage 	 : Thread Safe, Object is created only When getInstance() Method is called (No Memory Wastage).
+Disadvantage : Performance Issue
+
+
+
+Approach 4 : Double Checking with Thread Safety Using 'synchronized Block'
+=========================================================================
+
+public class Car 
+{
+	private static Car ob=null;
+	
+	private Car()
+	{
+		System.out.println("Constructor Car");
+	}
+	
+	public static Car getInstance()
+	{
+		if(ob == null)
+		{
+			synchronized(Car.class)
+			{
+				if(ob == null)
+				{
+					ob = new Car();
+				}
+			}
+		}
+		return ob;
+	}
+}
+
+
+Advantage : Best Approach
+			Because -
+			--> Lazy Initialization
+			--> Thread Safety
+			--> Performance Improvised
+
+
+Study :
+		volatile 
+
+-----------------------------------------*************************************------------------------------------------
+
+
+												============
+												Spring Boot
+												============
+
+Q. What is Spring Boot ?
+========================
+--> Spring Boot is an Extension to the Spring Framework. So we can call it as Framework. But we cannot say it is 
+	another framework.
+--> Spring Boot is the NEW Approach to write a Spring Application.
+--> If we are Developing any Spring Application using Spring Boot, we can call it as Spring Boot Application.
+
+
+
+Q. Why Spring Boot ?
+====================
+1. Starters
+-----------
+--> Spring Boot has Provided Starter packs, for dependencies.
+--> If you are working with Spring Framework, then the programmer has to add multiple dependencies 
+    with compatible versions to implement requirement in the 'pom.xml' file.
+--> But with Spring Boot, the Programmer has no need to search for the compatible version of the 
+	dependencies and no need to add the multiple dependencies in pom.xml file.
+--> Instead, the Programmer can add a starter dependency provided by Spring Boot to fullfill the requirement.
+
+Example :
+---------
+spring-boot-starter-web
+spring-boot-starter-data-jpa
+spring-boot-starter-data-mongodb
+
+
+2. Auto Configuration
+---------------------
+--> Spring Boot has provided Auto Configuration feature.
+--> In this, Spring Boot itself will provide the most of the configurations required for an application,
+    based on the Spring Boot starters added in pom.xml as dependencies.
+
+
+3. Spring Boot is mainly introduced to implement Microservices Architecture.
+   Spring Boot supports Spring Cloud & also integrates with the tools like Docker, Kubernetes and cloud environment
+   like AWS, Azure & GCP.
+
+4. Spring Boot Applications are embedded servers like Tomcat, Jetty inside the Application itself.
+   When u run Main() Method it will Launches it's own Tomcat Server.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
