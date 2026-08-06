@@ -1847,7 +1847,7 @@ Bean Autowiring
     --->  Bean Autowiring is applicable only on "Reference DataType". & Not Applicable for primitive Type.
 
 
---> Bean Autowiring means without creating constructor i<constructor-arg>, setter i<property>, dependency object is inject in dependent class, by IOC is called as Bean Autowiring.
+--> Bean Autowiring means without creating constructor <constructor-arg>, setter <property>, dependency object is inject in dependent class, by IOC is called as Bean Autowiring.
 
 --> To do autowiring you must use "autowire" attribute in <bean> tag.
 
@@ -2884,7 +2884,7 @@ Beans Scope
 1. Singleton Scope:
 -------------------
 --> Only ONE object created for bean class; the SAME object reused by the container always.
---> By Default Every Bean Object scope is '/]\singleton scope'.
+--> By Default Every Bean Object scope is 'singleton scope'.
 --> Singleton scope By-Default does Eager Initialization of Bean Object. If you want late Initialization then use
     @Lazy.
 
@@ -2978,11 +2978,6 @@ Working of @Autowired -
 --> It does Injection through "byType", but if you have Multiple Beans with SAME Type then it goes
 	with "byName", after this also, if you doesn't succed to Match Bean then you will get an 
 	"UnsatisfiedDependencyException".
-
-
-
-
-
 
 
 
@@ -3175,22 +3170,401 @@ spring-boot-starter-data-mongodb
    When u run Main() Method it will Launches it's own Tomcat Server.
 
 
+---------------------------------------------------------------------------------------------------------------------
+
+Lec 6.2
+
+How to Create Spring Boot Project using an IDE
+==============================================
+
+Two Ways:
+	1. Using Spring Intializer Tool
+	2. Spring Starter Project Options in an IDE like STS IDE
+
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter</artifactId>
+</dependency>
+
+--> Used bcoz You are Intrested in developing spring core applications
+--> If you do NOT add Any Dependencies, Spring Initializer adds one default starter automatically
+	i.e  spring-boot-starter.
+
+--> This is for Spring Boot CORE Applications - simple console-based Applications that do NOT need web,
+    database, security, or any other specific features.
+
+
+Observations
+------------
+1. <parent>, <relative/>
+2. No version Number in dependencies of Spring Boot
+3. <plugin>
 
 
 
 
 
+---------------------------------------------------------------------------------------------------------------------
+
+-------
+Lec 6.3
+-------
+
+@SpringBootApplication
+public class SampleApplication 
+{
+	public static void main(String[] args) 
+	{
+		SpringApplication.run(SampleApplication.class, args);
+	}
+}
+
+
+Understanding 'main() Method' in Spring Boot
+=============================================
+--> @SpringBootApplication represents that, this class is the Entry Point to execute the Spring Boot Application.
+--> A class with this @SpringBootApplication Annotation, contains Java 'main() method'.
+--> Every Spring Boot Applcation's Execution starts from main() method only.
+
+
+
+======================
+@SpringBootApplication 
+======================
+--> @SpringBootApplication is combination of 3 Annotations -
+	1. @Configuration
+	2. @EnableAutoConfiguration
+	3. @ComponentScan
+
+@SpringBootApplication = @Configuration + @EnableAutoConfiguration + @ComponentScan 
+
+Note :
+------
+	  Instead of @SpringBootApplication, we can write @Configuration, @EnableAutoConfiguration, @ComponentScan.
+	  But it's not recommended bcoz if we miss any one of them then that support will not be provided to our
+	  spring boot Appln. 
+
+
+@Configuration
+--------------
+--> Default Common Configuration for every Spring Boot project like start tomcat, connect database, apply security.
+    But if I want to write any Configuration to my project then I must have to provide through @Bean Method, & we
+    know that @Bean Methods are written in a Configuration class i.e class which has @Configuration Annotation.
+
+--> @SpringBootApplication is internally having @Configuration Annotation, so the class which has 
+	@SpringBootApplication Annotation in Which we can write @Bean Method to provide our own configurations.
+
+
+@EnableAutoConfiguration
+------------------------
+spring-boot-autoconfiguremodule
+
+--> This Annotation will enable(add) 'autoconfiguremodule' support to our application.
+--> Due to which, this module is going to complete All the configurations required based on starter
+	dependencies added in the pom.xml file. 
+--> It will go to the project class path & it will identify what are the starter dependencies available in the 
+	project class path.
+
+
+
+@ComponentScan	
+--------------
+--> Component Scanning starts from the package in which @SpringBootApplication class is present
+	(where main() is defined).
+
+Example : com.tca 
 
 
 
 
+SpringApplication.run(SampleApplication.class, args);
+=====================================================
+--> Spring Boot has provided SpringApplication class with a static Method called run() to do the below tasks-
+	Task of run() -
+
+(1) Start Spring Container
+(2) Load the Configuration properties from command line arguments into ApplicationContext
+(3) Execute Runner Components
 
 
 
+Note : In Spring Boot Application, Developer Never Ever Starts the Container.
+------
+
+ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+
+java -jar sample-1.0.jar
+
+java -jar sample-1.0.jar --server.port=8081 --admin.user=sachin
+
+---------------------------------------------------------------------------------------------------------------------
+
+-------
+Lec 6.4
+-------
+
+
+How to know the container name ?
+---------------------------------
+-->
+
+1. When you have Spring core starter only : spring-boot-starter
+   ---------------------------------------
+
+@SpringBootApplication
+public class Application {
+
+	public static void main(String[] args) 
+	{
+		Approach 1:
+		----------
+		ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
+		System.out.println("Container Name : " + context.getClass().getName() );
+
+		Approach 2:
+		-----------
+		SpringApplication.run(Application.class, args).getClass().getName();
+	} 
+}
+
+Output : Container Name : org.springframework.context.annotation.AnnotationConfigApplicationContext
+--------
+
+2. When you have added web Starter:	spring-boot-starter-web
+   -------------------------------- 
+
+Output : Container Name: org.springframework.context.annotation.AnnotationConfigServletWebServerApplicationContext  
+--------
+
+---------------------------------------------------------------------------------------------------------------------
+
+-------
+Lec 6.5
+-------
+
+===================
+Interview Questions
+===================
+
+Note: 	Dependency Injection doesn't work for static final References. 
+-----
+
+Example :
+---------
+
+@Component
+public class C 
+{
+	//@Autowired
+	static final D d; 	--> ERROR
+	
+
+	@Autowired
+	public C(D d)
+	{
+		this.d=d;
+		System.out.println("C - Bean Created Using Constructor Injection !!");
+	}
+
+	
+/*	
+  	// Setter is not Applicable with final
+  	 
+	@Autowired
+	public void setD(D d)
+	{
+		this.d=d;
+		System.out.println("C - Bean Created Using Setter Injection !!");
+	}
+*/	
+	public void MethodC()
+	{
+		d.MethodD();
+	}
+}
+
+------------------------------------------------------------------------------------------------------------
+java -jar target/01-Welcome-1.0.jar
+
+mvn spring-boot:run
+
+
+===========================================
+Spring Boot Maven Plugin i.e <plugin> tag
+===========================================
+
+1. Maven Plugin Configuration:
+------------------------------
+The Parent inherits configurations for all standard Maven Lifecycle plugins(maven-jar-plugin, maven-surefire-plugin,etc)
+that are required for every Maven Project. You do NOT see these plugins listed in your Spring Boot pom.xml bcoz
+they are inherited from the parent automatically.
+
+
+2. Creates a Self-contained executable FAT JAR:
+-----------------------------------------------
+When you run 'mvn package', this plugin packages the applcation into a special JAR file that contains not just
+your compiled code but Also All dependency JAR's embedded inside it. This FAT JAR is completly self-contained
+- it can be run directly with "java -jar app.jar" from any machine with java installed, without needing to
+install Spring Boot or any libraries separetly.
+
+3. Enables running the application via Maven:
+---------------------------------------------
+The Plugin adds a 'mvn spring-boot:run' Maven goal that allows running the Spring Boot Application DIRECTLY
+from the Maven command line without first building a JAR.
+
+
+Assume you are in Project Folder -
+----------------------------------
+
+01-Welcome-App ] java -jar target/01-Welcome-App-1.0.jar 	--> This is java command
+
+01-Welcome-App ] mvn spring-boot:run 						--> This is mvn command
+
+
+Difference Between JAR After Building Application
+-------------------------------------------------
+
+01-Welcome-App-1.0.jar 			 --> has Application code + Dependencies JAR
+
+01-Welcome-App-1.0.jar.original  --> has Only Application code 
+
+---------------------------------------------------------------------------------------------------------------------
+
+-------
+Lec 6.6
+-------
+
+=================
+Runner Compenents
+=================
+--> If you want to execute a task for one time in a spring boot application, immediately when application start,
+    then you have to define your logic as a runner components.
+
+--> To define Runner component, the Spring boot has provided two interfaces -
+	1. CommandLineRunner interface
+	2. ApplicationRunner interface
+
+	Difference -
+
+	public void run(String[] args)			public void run(ApplicationArguments args)
+	{										{
+	
+	}										}
+	
+	java -jar app.jar Pune Mumbai			java -jar app.jar --user=pratik  --city=pune
+
+--> Runner Component gets called Automatically by Spring Container, So to do that we should add @Component Annotation
+    to runner class to register the runner bean into the Spring Container.
+
+Example :
+---------
+
+@Component
+public class MyRunner implements ApplicationRunner 
+{
+	@Override
+	public void run(ApplicationArguments args) throws Exception 
+	{	
+		System.out.println("Task - Hello Runner ");
+	}
+}
+
+--> You can defined More than One Runner Component in your Project. They are Executed in Random order.
+--> To specify order of Execution between Runner Components, we must use @Order Annotation.
+
+Example:
+--------
+
+@Component
+@Order(2)
+public class MyRunner implements ApplicationRunner 
+{
+
+}
+
+@Component
+@Order(value=1)
+public class MyRunner2 implements ApplicationRunner 
+{
+	@Override
+	public void run(ApplicationArguments args) throws Exception 
+	{	
+		System.out.println("Task 2 - Message-Queue task Executing ->");
+	}
+}
+
+
+Note :
+------ If @Order Annotation has same value for multiple places then we don't get any error or exception. 
+       But they are executed in Ramdom Order.
 
 
 
+---------------------------------------------------------------------------------------------------------------------
 
+-------
+Lec 6.7
+-------
+
+application.properties - Spring Boot's Configuration File
+=========================================================
+--> application.properties is a File automatically created in every Spring Boot project.
+
+--> It is the primary location where you configure All Application-level properties like Database Connections,
+	server port etc.
+
+--> 'spring.application.name' is automatically added to 'application.properties' with a default value
+	when you create the project via Spring Intializer. It takes the Artifact name as the default value.
+
+--> Purpose of 'spring.application.name'
+	It is used later for service discovery (Eureka), distributed tracing, and logging to identify which appln
+	generated a log entry.
+
+
+
+applicartion.properties VS application.yml
+==========================================
+--> Spring Boot supports TWO formats for configuration-
+	1. .properties (flat key=value)
+	2. .yml		   (YAML - hierarchical structure)
+
+--> Both Achieve the same result. The .yml format is more commonly preferred in modern Spring Boot Projects Bcoz
+	it is more readable, less repetative, and is the standard format in Docker and Kubernetes environments.
+
+
+
+Banner Configuration via application properties
+-----------------------------------------------
+
+#Configuring Banner 
+spring.main.banner-mode=console  (default)
+spring.main.banner-mode=off
+spring.main.banner-mode=log
+
+
+Note :
+-----
+If I want to change properties file name like "tca.properties" then you have to mention that name at main 
+Application class using @PropertySource Annotation.
+
+Example:
+-------
+@SpringBootApplication
+@PropertySource("tca.properties")
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+
+}
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+-------
+Lec 6.8
+-------
 
 
 
