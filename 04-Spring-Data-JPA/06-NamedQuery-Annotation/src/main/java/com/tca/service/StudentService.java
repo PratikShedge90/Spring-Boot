@@ -9,8 +9,10 @@ public interface StudentService
 {
 	public List<Student> fetchAllByGreaterThanPerAndGender(Double per, Gender gender);
 	
-	public void modifyName(String name, Integer rno);
+	public void modifyStudnetName(String name, Integer rno);
 	
 	public List<Object[]> fetchGenderAndName();
+	
+	public List<Object[]> countByGender();
 	
 }

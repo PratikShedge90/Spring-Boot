@@ -25,4 +25,6 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
 	
 	public List<Object[]> findGenderAndName();
 	
+	public List<Object[]> countByGender();
+	
 }

@@ -18,9 +18,14 @@ import lombok.NoArgsConstructor;
 @NamedQuery(name="Student.findAllByGreaterThanPerAndGender", 
 			query="select s from Student s where s.per>= :per and s.gender=:gender")
 
-@NamedQuery(name="Student.updateName", query="update Student s set s.name=:userName where s.rno=:UserRno")
-@NamedQuery(name= "Student.findGenderAndName" ,
-			query= "select s.name, s.gender from Student s")
+@NamedQuery(name="Student.updateName", 
+			query="update Student s set s.name=:userName where s.rno=:UserRno")
+
+@NamedQuery(name= "Student.findGenderAndName",
+			query= "select s.name,s.gender from Student s")
+
+@NamedQuery(name= "Student.countByGender",
+			query="select s.gender, count(s) from Student s group by s.gender")
 public class Student 
 {
 	@Id

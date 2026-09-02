@@ -22,13 +22,19 @@ public class StudentServiceImpl implements StudentService {
 		return studentRepository.findAllByGreaterThanPerAndGender(per, gender);
 	}
 	@Override
-	public void modifyName(String name, Integer rno) {
+	public void modifyStudnetName(String name, Integer rno) {
 		
 		studentRepository.updateName(name,rno);
 	}
+	
 	@Override
 	public List<Object[]> fetchGenderAndName() {
 		return studentRepository.findGenderAndName();
+	}
+	
+	@Override
+	public List<Object[]> countByGender() {
+		return studentRepository.countByGender();
 	}
 	
 	

@@ -43,15 +43,25 @@ public class MyRunner implements ApplicationRunner {
 	@Override
 	public void run(ApplicationArguments args) throws Exception 
 	{
+		/*** Test Code : findAllByGreaterThanPerAndGender ***/
+//	    List<Student> list = studentService.fetchAllByGreaterThanPerAndGender(60.0, Gender.MALE);
+//	    printStudents(list);
 		
-//	List<Student> list = studentService.fetchAllByGreaterThanPerAndGender(60.0, Gender.MALE);
-//	printStudents(list);
-
-		/***  ***/
+		/*** Test Code : updateName ***/
+//		studentService.modifyStudnetName("Sushant", 103);
 		
-/*		List<Object[]> list = studentService.fetchGenderAndName();
+		
+		/*** Test Code : Scalar Projection ***/
+/*		
+		List<Object[]> list = studentService.fetchGenderAndName();
 		printStudentScalarValues(list);
-*/	
+*/
+		/*** Test Code : Scalar Projection CountByGender ***/
+/*		
+		List<Object[]> list = studentService.countByGender();
+		printStudentScalarValues(list);
+*/
+		
 	}
 
 	
