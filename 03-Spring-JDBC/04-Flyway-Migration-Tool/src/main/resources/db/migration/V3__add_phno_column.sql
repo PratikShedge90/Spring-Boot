@@ -1,0 +1,1 @@
+ALTER TABLE student ADD COLUMN phno VARCHAR(10);
