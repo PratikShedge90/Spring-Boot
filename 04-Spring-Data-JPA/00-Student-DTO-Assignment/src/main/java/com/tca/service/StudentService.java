@@ -108,7 +108,7 @@ public class StudentService
 	
 	/** Helper Method To Convert DTO-->Entity */
 	
-	private Student mapToEntity(StudentRequestDTO studentReqDTO)
+	private static Student mapToEntity(StudentRequestDTO studentReqDTO)
 	{
 		Student student = new Student();
 		
@@ -124,7 +124,7 @@ public class StudentService
 		return student; 	// We Will Implement it Ahead with Builder Design Pattern
 	}
 	
-	private StudentResponseDTO mapToDTO(Student student)
+	private static StudentResponseDTO mapToDTO(Student student)
 	{
 		StudentResponseDTO studentRespDTO = new StudentResponseDTO();
 		studentRespDTO.setId(student.getId());
